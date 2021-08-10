@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "488535723897",
+    "project_id": "thirdapp-6ac38",
+    "storage_bucket": "thirdapp-6ac38.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:488535723897:android:c59f451d399e29412b69a8",
+        "android_client_info": {
+          "package_name": "com.robertohuertas.endless"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "488535723897-s7ghmch0kdvf117skf5eva1sdt00hppl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQO58siKOfhFH7GKdsUAXR0iRR5vWSKQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "488535723897-s7ghmch0kdvf117skf5eva1sdt00hppl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:488535723897:android:dad3148feff680db2b69a8",
+        "android_client_info": {
+          "package_name": "org.sheba.endless"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "488535723897-s7ghmch0kdvf117skf5eva1sdt00hppl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQO58siKOfhFH7GKdsUAXR0iRR5vWSKQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "488535723897-s7ghmch0kdvf117skf5eva1sdt00hppl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
