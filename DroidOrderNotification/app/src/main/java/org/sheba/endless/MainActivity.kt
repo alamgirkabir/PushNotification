@@ -6,66 +6,34 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import android.app.NotificationChannel
-
 import android.app.NotificationManager
 import android.content.Context
 import android.graphics.Color
-import android.content.pm.PackageManager
-
-import android.content.pm.ResolveInfo
-
-import android.content.ComponentName
+import android.util.Log
 import android.widget.EditText
-import android.widget.TextView
-import java.lang.Exception
-
+import android.widget.Toast
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 
 class MainActivity : AppCompatActivity() {
+    init {
+        instance = this
+    }
+
+    companion object {
+        private var instance: MainActivity? = null
+
+        fun applicationContext() : Context {
+
+            return instance!!.applicationContext
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-
         title = "Order Notfier Service"
-
-//        val manufacturer = Build.MANUFACTURER
-//        try {
-//            val intent = Intent()
-//            if ("xiaomi".equals(manufacturer, ignoreCase = true)) {
-//                intent.component = ComponentName(
-//                    "com.miui.securitycenter",
-//                    "com.miui.permcenter.autostart.AutoStartManagementActivity"
-//                )
-//            } else if ("oppo".equals(manufacturer, ignoreCase = true)) {
-//                intent.component = ComponentName(
-//                    "com.coloros.safecenter",
-//                    "com.coloros.safecenter.permission.startup.StartupAppListActivity"
-//                )
-//            } else if ("vivo".equals(manufacturer, ignoreCase = true)) {
-//                intent.component = ComponentName(
-//                    "com.vivo.permissionmanager",
-//                    "com.vivo.permissionmanager.activity.BgStartUpManagerActivity"
-//                )
-//            } else if ("Letv".equals(manufacturer, ignoreCase = true)) {
-//                intent.component = ComponentName(
-//                    "com.letv.android.letvsafe",
-//                    "com.letv.android.letvsafe.AutobootManageActivity"
-//                )
-//            } else if ("Honor".equals(manufacturer, ignoreCase = true)) {
-//                intent.component = ComponentName(
-//                    "com.huawei.systemmanager",
-//                    "com.huawei.systemmanager.optimize.process.ProtectActivity"
-//                )
-//            }
-//            val list =
-//                packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-//            if (list.size > 0) {
-//                startActivity(intent)
-//            }
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
 
         if(getServiceState(applicationContext) == ServiceState.STARTED){
             findViewById<Button>(R.id.btnStartService).visibility = Button.GONE;
@@ -106,7 +74,23 @@ class MainActivity : AppCompatActivity() {
             mNotificationManager.createNotificationChannel(mChannel)
         }
         actionOnService(Actions.START)
-        findViewById<EditText>(R.id.textViewToken).setText(MyFirebaseMessagingService.getToken(this));
+
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener(OnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.w("FCM", "Fetching FCM registration token failed", task.exception)
+                    return@OnCompleteListener
+                }
+
+                // Get new FCM registration token
+                val token = task.result
+                // Log and toast
+                getSharedPreferences("_", MODE_PRIVATE).edit().putString("fb", token).apply()
+                Toast.makeText(this@MainActivity, token, Toast.LENGTH_SHORT).show()
+                findViewById<EditText>(R.id.textViewToken).setText(MyFirebaseMessagingService.getToken(this));
+
+                PingSender.pingFakeServer();
+            })
 //        MyNotificationManager.getInstance(this).displayNotification("Greetings", "Hello how are you?");
     }
 
@@ -122,5 +106,8 @@ class MainActivity : AppCompatActivity() {
             log("Starting the service in < 26 Mode")
             startService(it)
         }
+    }
+    fun getAppContext(): Context? {
+        return getAppContext();
     }
 }

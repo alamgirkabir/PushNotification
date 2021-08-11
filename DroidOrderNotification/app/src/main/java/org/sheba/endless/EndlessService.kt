@@ -77,6 +77,21 @@ class EndlessService : Service() {
         isServiceStarted = true
         setServiceState(this, ServiceState.STARTED)
 
+
+
+        // we're starting a loop in a coroutine
+        GlobalScope.launch(Dispatchers.IO) {
+            while (isServiceStarted) {
+                launch(Dispatchers.IO) {
+//                    pingFakeServer()
+                    PingSender.pingFakeServer()
+                }
+                delay(1 * 60 * 1000)
+            }
+            log("End of the loop for the service")
+        }
+
+
         // we need this lock so our service gets not affected by Doze Mode
         wakeLock =
             (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
@@ -84,17 +99,6 @@ class EndlessService : Service() {
                     acquire()
                 }
             }
-
-        // we're starting a loop in a coroutine
-        GlobalScope.launch(Dispatchers.IO) {
-            while (isServiceStarted) {
-                launch(Dispatchers.IO) {
-                    pingFakeServer()
-                }
-                delay(1 * 60 * 1000)
-            }
-            log("End of the loop for the service")
-        }
     }
 
     private fun stopService() {
@@ -115,36 +119,36 @@ class EndlessService : Service() {
         setServiceState(this, ServiceState.STOPPED)
     }
 
-    private fun pingFakeServer() {
-        val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.mmmZ")
-        val gmtTime = df.format(Date())
-
-        val deviceId = Settings.Secure.getString(applicationContext.contentResolver, Settings.Secure.ANDROID_ID)
-
-        var deviceToken = getSharedPreferences("_", MODE_PRIVATE).getString("fb", null);
-        val json =
-            """
-                {
-                    "deviceId": "$deviceId",
-                    "createdAt": "$gmtTime",
-                    "deviceToken": "$deviceToken"
-                }
-            """
-        try {
-            Fuel.post("http://dev-sheba.xyz:8080/devices/add")
-                .jsonBody(json)
-                .response { _, _, result ->
-                    val (bytes, error) = result
-                    if (bytes != null) {
-                        log("[response bytes] ${String(bytes)}")
-                    } else {
-                        log("[response error] ${error?.message}")
-                    }
-                }
-        } catch (e: Exception) {
-            log("Error making the request: ${e.message}")
-        }
-    }
+//    private fun pingFakeServer() {
+//        val df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.mmmZ")
+//        val gmtTime = df.format(Date())
+//
+//        val deviceId = Settings.Secure.getString(applicationContext.contentResolver, Settings.Secure.ANDROID_ID)
+//
+//        var deviceToken = getSharedPreferences("_", MODE_PRIVATE).getString("fb", null);
+//        val json =
+//            """
+//                {
+//                    "deviceId": "$deviceId",
+//                    "createdAt": "$gmtTime",
+//                    "deviceToken": "$deviceToken"
+//                }
+//            """
+//        try {
+//            Fuel.post("http://dev-sheba.xyz:8080/devices/add")
+//                .jsonBody(json)
+//                .response { _, _, result ->
+//                    val (bytes, error) = result
+//                    if (bytes != null) {
+//                        log("[response bytes] ${String(bytes)}")
+//                    } else {
+//                        log("[response error] ${error?.message}")
+//                    }
+//                }
+//        } catch (e: Exception) {
+//            log("Error making the request: ${e.message}")
+//        }
+//    }
 
     private fun createNotification(): Notification {
         val notificationChannelId = "ENDLESS SERVICE CHANNEL"
